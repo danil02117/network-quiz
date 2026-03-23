@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Сеть Тест">
+    <title>Сетевые технологии - Тест</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: #4ecca3;
+            margin-bottom: 10px;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .mode-indicator {
+            background: rgba(78,204,163,0.2);
+            color: #4ecca3;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .topic-selector-small {
+            flex: 1;
+        }
+
+        .topic-select-small {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234ecca3' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+        }
+
+        .topic-select-small option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .question-topic {
+            font-size: 0.85rem;
+            color: #4ecca3;
+            margin-bottom: 12px;
+            padding: 6px 12px;
+            background: rgba(78,204,163,0.1);
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4ecca3, #45b393);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option:hover {
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(78,204,163,0.5);
+        }
+
+        .option.selected {
+            background: rgba(78,204,163,0.2);
+            border-color: #4ecca3;
+        }
+
+        .option.correct {
+            background: rgba(76,175,80,0.3);
+            border-color: #4caf50;
+        }
+
+        .option.incorrect {
+            background: rgba(244,67,54,0.3);
+            border-color: #f44336;
+        }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .option.selected .option-letter {
+            background: #4ecca3;
+            color: #1a1a2e;
+        }
+
+        .option.correct .option-letter {
+            background: #4caf50;
+            color: #fff;
+        }
+
+        .option.incorrect .option-letter {
+            background: #f44336;
+            color: #fff;
+        }
+
+        .option-text {
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ecca3, #45b393);
+            color: #1a1a2e;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(78,204,163,0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .result-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #4ecca3;
+        }
+
+        .result-score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .result-details {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .result-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .result-stat:last-child {
+            border-bottom: none;
+        }
+
+        .result-stat-label {
+            color: #888;
+        }
+
+        .result-stat-value {
+            font-weight: bold;
+            color: #4ecca3;
+        }
+
+        .result-stat-value.incorrect {
+            color: #f44336;
+        }
+
+        .topic-selector {
+            margin-bottom: 20px;
+        }
+
+        .topic-select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234ecca3' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+        }
+
+        .topic-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(78,204,163,0.1);
+            border-left: 4px solid #4ecca3;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: rgba(76,175,80,0.1);
+            border-left-color: #4caf50;
+        }
+
+        .feedback.incorrect {
+            background: rgba(244,67,54,0.1);
+            border-left-color: #f44336;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .start-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #4ecca3;
+        }
+
+        .start-description {
+            color: #888;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            text-align: left;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            color: #4ecca3;
+            font-size: 1.2rem;
+        }
+
+        .abbreviations-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        .abbreviations-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .abbreviations-container {
+            padding: 20px;
+        }
+
+        .abbreviations-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .abbreviations-title {
+            font-size: 1.5rem;
+            color: #4ecca3;
+        }
+
+        .abbreviations-search {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .abbreviations-search::placeholder {
+            color: #888;
+        }
+
+        .abbreviations-category {
+            margin-bottom: 25px;
+        }
+
+        .abbreviations-category-title {
+            font-size: 1.1rem;
+            color: #4ecca3;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(78,204,163,0.3);
+        }
+
+        .abbreviations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .abbreviation-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .abbreviation-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(78,204,163,0.3);
+            transform: translateY(-2px);
+        }
+
+        .abbreviation-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .abbreviation-card-abbr {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #4ecca3;
+        }
+
+        .abbreviation-card-full {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+
+        .abbreviation-card-translation {
+            font-size: 0.9rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .abbreviation-card-description {
+            font-size: 0.85rem;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 400px) {
+            body {
+                padding: 15px;
+            }
+
+            .question-text {
+                font-size: 1.1rem;
+            }
+
+            .option {
+                padding: 12px 15px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📡 Сетевые технологии</h1>
+            <p style="color: #888; font-size: 0.9rem;">Подготовка к тесту</p>
+        </header>
+
+        <div id="app">
+            <!-- Контент будет рендериться через JS -->
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="abbreviations.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
